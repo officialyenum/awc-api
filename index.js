@@ -7,6 +7,7 @@ const userRoute = require("./routes/users");
 const postRoute = require("./routes/posts");
 const categoryRoute = require("./routes/categories");
 const mediaRoute = require("./routes/medias");
+const response = require("./utils/response");
 
 dotenv.config();
 app.use(express.json());
@@ -27,6 +28,19 @@ app.use(function (req, res, next) {
   next();
 });
 
+app.use("/", async (req, res) => {
+  try {
+    response(
+      res,
+      "success",
+      "Welcome to Afterworkchills Api Endpoint",
+      [],
+      200
+    );
+  } catch (err) {
+    response(res, "error", err, [], 500);
+  }
+});
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
