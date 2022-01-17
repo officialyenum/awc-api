@@ -3,6 +3,21 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const response = require("../utils/response");
 
+// Home
+router.post("/", async (req, res) => {
+  try {
+    response(
+      res,
+      "success",
+      "Welcome to Afterworkchills Api Endpoint",
+      [],
+      200
+    );
+  } catch (err) {
+    response(res, "error", err, [], 500);
+  }
+});
+
 //REGISTER
 router.post("/register", async (req, res) => {
   try {
