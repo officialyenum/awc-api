@@ -1,7 +1,11 @@
+const path = require("path");
+
 const express = require("express");
+const mongoose = require("mongoose");
 const app = express();
 const dotenv = require("dotenv");
-const mongoose = require("mongoose");
+const cors = require("cors");
+const bodyParser = require("body-parser");
 const authRoute = require("./routes/auth");
 const userRoute = require("./routes/users");
 const postRoute = require("./routes/posts");
@@ -10,7 +14,6 @@ const mediaRoute = require("./routes/medias");
 const response = require("./utils/response");
 
 dotenv.config();
-app.use(express.json());
 
 mongoose
   .connect(process.env.MONGO_URL)
@@ -19,14 +22,10 @@ mongoose
     console.log(err);
   });
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+// Middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(cors());
 
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);

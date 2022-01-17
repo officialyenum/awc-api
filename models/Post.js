@@ -13,17 +13,19 @@ const PostSchema = new Schema(
       required: true,
     },
     photo: {
-      type: String,
-      required: false,
+      type: Schema.Types.ObjectId,
+      ref: "Media",
     },
     username: {
       type: String,
       required: true,
     },
-    categories: {
-      type: Array,
-      required: false,
-    },
+    categories: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Category",
+      },
+    ],
   },
   { timestamps: true }
 );
