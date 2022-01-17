@@ -28,6 +28,11 @@ app.use(function (req, res, next) {
   next();
 });
 
+app.use("/api/auth", authRoute);
+app.use("/api/users", userRoute);
+app.use("/api/posts", postRoute);
+app.use("/api/categories", categoryRoute);
+app.use("/api/medias", mediaRoute);
 app.use("/", async (req, res) => {
   try {
     response(
@@ -41,11 +46,6 @@ app.use("/", async (req, res) => {
     response(res, "error", err, [], 500);
   }
 });
-app.use("/api/auth", authRoute);
-app.use("/api/users", userRoute);
-app.use("/api/posts", postRoute);
-app.use("/api/categories", categoryRoute);
-app.use("/api/medias", mediaRoute);
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
