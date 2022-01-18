@@ -14,4 +14,7 @@ router.get("/:id", userController.getUser);
 //GET ALL USER
 router.get("/", userController.getUsers);
 
+//Add Avatar USER
+router.post("/avatar/:id", userController.addAvatar);
+
 module.exports = router;

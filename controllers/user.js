@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Media = require("../models/Media");
 const bcrypt = require("bcrypt");
 const response = require("../utils/response");
 
@@ -85,7 +86,9 @@ exports.deleteUser = async (req, res) => {
 
 exports.getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id)
+      .populate("avatar")
+      .select("-_v");
     const { password, ...others } = user._doc;
 
     response(res, "success", "succesfully retrieved user", others, 200);
@@ -104,5 +107,23 @@ exports.getUsers = async (req, res) => {
     response(res, "success", "succesfully retrieved users", data, 200);
   } catch (error) {
     response(res, "error", "User not found!", [], 404);
+  }
+};
+
+exports.addAvatar = async (req, res) => {
+  try {
+    console.log(req.body);
+    const avatar = await Media.findById(req.body.media_id);
+    console.log(avatar);
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: avatar,
+      },
+      { new: true }
+    );
+    response(res, "success", "succesfully Added Avatar user", updatedUser, 200);
+  } catch (error) {
+    response(res, "error", error, [], 500);
   }
 };

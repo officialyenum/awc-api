@@ -1,4 +1,5 @@
 const Media = require("../models/Media");
+const cloudinary = require("../utils/cloudinary");
 const response = require("../utils/response");
 
 exports.createMedia = async (req, res) => {
@@ -15,6 +16,7 @@ exports.createMedia = async (req, res) => {
     const savedMedia = await newMedia.save();
     response(res, "success", "Media uploaded successfully", savedMedia, 200);
   } catch (error) {
+    console.log(error);
     response(res, "error", error, [], 500);
   }
 };
@@ -82,12 +84,12 @@ exports.deleteMedia = async (req, res) => {
 
 exports.getMedia = async (req, res) => {
   try {
-    const media = await Media.findById(req.params.id);
+    const medias = await Media.find().select("-__v");
     response(
       res,
       "success",
-      "Media has been retrieved successfully...",
-      media,
+      "Medias has been retrieved successfully...",
+      medias,
       200
     );
   } catch (error) {
@@ -97,14 +99,8 @@ exports.getMedia = async (req, res) => {
 
 exports.getMedias = async (req, res) => {
   try {
-    const medias = await Media.find();
-    response(
-      res,
-      "success",
-      "Medias has been retrieved successfully...",
-      medias,
-      200
-    );
+    const medias = await Media.find().select("-__v");
+    response(res, "success", "Medias retrieved successfully", medias, 200);
   } catch (error) {
     response(res, "error", error, [], 500);
   }

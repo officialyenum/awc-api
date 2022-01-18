@@ -17,8 +17,9 @@ const UserSchema = new Schema(
       required: true,
     },
     avatar: {
-      type: String,
-      default: "",
+      type: Schema.Types.ObjectId,
+      ref: "Media",
+      default: null,
     },
   },
   { timestamps: true }
