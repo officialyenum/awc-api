@@ -19,10 +19,9 @@ https://www.afterworkchills.com
 
 Ensure node and git is installed on your system:
 
-    git clone repo
-    open folder in code editor
+    git clone https://github.com/officialyenum/awc-api.git
+    cd awc-api
     npm install
-    and re-use for yourself
 
 ## Contribute
 
