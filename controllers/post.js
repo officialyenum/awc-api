@@ -2,6 +2,7 @@ const Media = require("../models/Media");
 const Category = require("../models/Category");
 const Post = require("../models/Post");
 const response = require("../utils/response");
+const paginate = require("../utils/paginate");
 
 exports.createPost = async (req, res) => {
   try {
@@ -64,28 +65,35 @@ exports.getPost = async (req, res) => {
 };
 
 exports.getPosts = async (req, res) => {
-  const username = req.query.user;
-  const catName = req.query.cat;
+  const { page, perPage, user, cat } = req.query;
+  //
+  const options = {
+    select:
+      "_id title description photo username categories createdAt updatedAt",
+    populate: "photo categories",
+    page: parseInt(page, 10) || 1,
+    limit: parseInt(perPage, 10) || 10,
+  };
   try {
     let posts;
-    if (username) {
-      posts = await Post.find({ username })
-        .populate("photo categories")
-        .select("-__v -photo.__v -categories.__v -categories._id");
-    } else if (catName) {
-      posts = await Post.find({
-        categories: {
-          $in: [catName],
+    if (user) {
+      posts = await Post.paginate({ username: user }, options);
+    } else if (cat) {
+      const catObj = await Category.find({ name: cat });
+      posts = await Post.paginate(
+        {
+          categories: {
+            $in: [catObj],
+          },
         },
-      })
-        .populate("photo categories")
-        .select("-__v -photo.__v -categories.__v -categories._id");
+        options
+      );
+      console.log(posts);
     } else {
-      posts = await Post.find()
-        .populate("photo categories")
-        .select("-__v -photo.__v -categories.__v -categories._id");
+      posts = await Post.paginate({}, options);
     }
-    response(res, "success", "Posts retrieved successfully...", posts, 200);
+    console.log(posts);
+    paginate(res, "success", "Posts retrieved successfully...", posts, 200);
   } catch (error) {
     response(res, "error", error, [], 500);
   }

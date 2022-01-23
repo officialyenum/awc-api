@@ -84,12 +84,12 @@ exports.deleteMedia = async (req, res) => {
 
 exports.getMedia = async (req, res) => {
   try {
-    const medias = await Media.find().select("-__v");
+    const media = await Media.findById(req.param.id).select("-__v");
     response(
       res,
       "success",
-      "Medias has been retrieved successfully...",
-      medias,
+      "Media has been retrieved successfully...",
+      media,
       200
     );
   } catch (error) {

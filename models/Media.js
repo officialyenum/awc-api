@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate-v2");
 const { Schema } = mongoose;
 
 const MediaSchema = new Schema(
@@ -23,5 +24,8 @@ const MediaSchema = new Schema(
   },
   { timestamps: true }
 );
+
+
+MediaSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model("Media", MediaSchema);

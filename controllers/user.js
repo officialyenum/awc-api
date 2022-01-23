@@ -1,7 +1,9 @@
 const User = require("../models/User");
 const Media = require("../models/Media");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const response = require("../utils/response");
+const paginate = require("../utils/paginate");
 
 exports.register = async (req, res) => {
   try {
@@ -25,13 +27,22 @@ exports.login = async (req, res) => {
   try {
     const user = await User.findOne({
       username: req.body.username,
-    });
+    })
+      .populate("avatar")
+      .select("-__v");
     !user && res.status(400).json("Wrong Username Credentials");
     const validated = await bcrypt.compare(req.body.password, user.password);
     !validated && res.status(400).json("Wrong Password Credentials");
-    const { password, ...others } = user._doc;
+    const accessToken = jwt.sign(user, process.env.SECRET_KEY);
+    const signedUser = user.findByIdAndUpdate(
+      user._id,
+      {
+        $set: accessToken,
+      },
+      { new: true }
+    );
+    const { password, ...others } = signedUser._doc;
     response(res, "success", "logged in successfully", others, 200);
-    res.status(200).json(others);
   } catch (err) {
     response(res, "error", err, [], 500);
   }
@@ -88,7 +99,7 @@ exports.getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
       .populate("avatar")
-      .select("-_v");
+      .select("-__v");
     const { password, ...others } = user._doc;
 
     response(res, "success", "succesfully retrieved user", others, 200);
@@ -99,12 +110,15 @@ exports.getUser = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
   try {
-    const users = await User.find();
-    const data = users.map((user) => {
-      const { password, ...others } = user._doc;
-      return others;
-    });
-    response(res, "success", "succesfully retrieved users", data, 200);
+    const { page, perPage } = req.query;
+    const options = {
+      select: "_id username avatar email createdAt updatedAt",
+      populate: "avatar",
+      page: parseInt(page, 10) || 1,
+      limit: parseInt(perPage, 10) || 10,
+    };
+    const users = await User.paginate({}, options);
+    paginate(res, "success", "succesfully retrieved users", users, 200);
   } catch (error) {
     response(res, "error", "User not found!", [], 404);
   }
@@ -112,17 +126,25 @@ exports.getUsers = async (req, res) => {
 
 exports.addAvatar = async (req, res) => {
   try {
-    console.log(req.body);
-    const avatar = await Media.findById(req.body.media_id);
-    console.log(avatar);
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
-        $set: avatar,
+        $set: { avatar: req.body.media_id },
       },
       { new: true }
     );
-    response(res, "success", "succesfully Added Avatar user", updatedUser, 200);
+    console.log(updatedUser);
+    const media = await Media.findById(updatedUser.avatar).select("-__v");
+    console.log(media);
+    response(
+      res,
+      "success",
+      "succesfully Added Avatar to user",
+      {
+        url: media.cloudinary_url,
+      },
+      200
+    );
   } catch (error) {
     response(res, "error", error, [], 500);
   }
