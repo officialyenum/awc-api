@@ -1,10 +1,8 @@
-# awc-api
-
-Node Js Application Api for the afterworkchills applications
-
 # Afterwork Chills API
 
 A community for working class individuals to take a break and live
+
+Node Js Application Api for the afterworkchills applications
 
 This api will serve all its applications from mobile to web
 
@@ -15,7 +13,7 @@ https://www.afterworkchills.com
 - CRUD API Implementations
 - MongoDB modeling Schema setup and migration
 - Controllers and query services
-- Model - Json - Controller Architecture basically (LOL)
+- Model - Json - Controller Architecture basically
 
 ## Installation
 
